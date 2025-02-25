@@ -78,8 +78,7 @@ async def read_users_me(db: db_dependency, current_user: Users = Depends(get_cur
             "username": current_user.username,
             "email": current_user.email, 
             "first_name": current_user.first_name, 
-            "last_name": current_user.last_name,  
-            "referral_code": current_user.referral_code,   
+            "last_name": current_user.last_name,
             "is_email_verified": current_user.is_email_verified,  
         }
     )     
