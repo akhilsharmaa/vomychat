@@ -25,8 +25,10 @@ class UserBase(BaseModel):
 
 
 @router.post("/register")
-async def create_user(user: UserBase, db: db_dependency):
+async def create_user(referral:str, user: UserBase, db: db_dependency):
     
+    # TODO: Validate the users emails and username
+
     db_user = Users( 
             username=user.username,
             email=user.email,
@@ -34,8 +36,6 @@ async def create_user(user: UserBase, db: db_dependency):
             last_name=user.last_name, 
             password=get_password_hash(user.password),
         )
-
-    # TODO: Validate the users emails and username
 
     try:
         # Add the new user to the database
@@ -53,7 +53,7 @@ async def create_user(user: UserBase, db: db_dependency):
         )     
 
     except IntegrityError as e: 
-        
+
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,

@@ -14,3 +14,4 @@ class Users(Base):
     referred_by = Column(String(50), ForeignKey("users.username"), nullable=True)
     created_at = Column(DateTime, default=func.now()) 
     is_email_verified = Column(Boolean, default=False)  
+    credits = Column(Integer, default=0)  
