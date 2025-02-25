@@ -22,7 +22,7 @@ async def create_new_referral(refrral: RefrralBase, db: db_dependency, current_u
 
     refrral_body = Refrrals( 
             referrer_user_id=current_user.id,
-            referred_user_id=refrral.email,  
+            referred_user_email=refrral.email,  
         )
 
     try:
@@ -35,19 +35,16 @@ async def create_new_referral(refrral: RefrralBase, db: db_dependency, current_u
             status_code=200,
             content={
                     "message": f"Successfully referred", 
-                    "detail": f"you have refered the user with email: {current_user.email}, you can check the refrals"
+                    "detail": f"you have refered the user with email: {refrral.email}, you can check the refrals"
                 }
         )
 
     except IntegrityError as e: 
-        
+
         db.rollback()
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={
-                "message": "Failed referred",
-                "error": f"Error: {e}"
-            }
+            detail= f"You have already referred {refrral.email}, there is no need of referr again." 
         )
         
     except Exception as e:
@@ -70,8 +67,8 @@ async def get_all_refrrals(db: db_dependency, current_user: Users = Depends(get_
         
         refered_users_list = []
         for referral in results: 
-            refered_users_list.append({
-                "referred_user_id": referral.referred_user_id,        
+            refered_users_list.append({        
+                "email": referral.referred_user_email,        
                 "status": referral.status,        
             })
         
