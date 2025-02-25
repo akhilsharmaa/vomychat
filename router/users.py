@@ -32,21 +32,25 @@ async def create_user(user: UserBase, db: db_dependency):
             email=user.email,
             first_name=user.first_name, 
             last_name=user.last_name, 
-            password=get_password_hash(user.password), 
-            credits=40,
+            password=get_password_hash(user.password),
         )
+
+    # TODO: Validate the users emails and username
 
     try:
         # Add the new user to the database
         db.add(db_user)
         db.commit()
-        db.refresh(db_user)
-
-        return {
-            "message": "User registered successfully.", 
-            "username": db_user.username,
-            "email": db_user.email
-        }
+        db.refresh(db_user) 
+        
+        return JSONResponse(
+            status_code=200,
+            content= {
+                "message": "User registered successfully.", 
+                "username": db_user.username,
+                "email": db_user.email
+            }
+        )     
 
     except IntegrityError as e: 
         
@@ -74,7 +78,8 @@ async def read_users_me(db: db_dependency, current_user: Users = Depends(get_cur
             "username": current_user.username,
             "email": current_user.email, 
             "first_name": current_user.first_name, 
-            "last_name": current_user.last_name, 
-            "credits": current_user.credits, 
+            "last_name": current_user.last_name,  
+            "referral_code": current_user.referral_code,   
+            "is_email_verified": current_user.is_email_verified,  
         }
     )     

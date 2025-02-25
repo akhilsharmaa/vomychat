@@ -10,15 +10,18 @@ from ..services.database import engine
 from sqlalchemy.orm import Session
 from ..services.database import db_dependency
 
-
-router = APIRouter()
+ 
+router = APIRouter(
+    prefix="",
+    tags=["Users"],
+    responses={404: {"description": "Not found"}},
+) 
 
 
 class Token(BaseModel):
     access_token: str
     token_type: str
 
-    
 
 @router.post("/token")
 async def login_for_access_token(db: db_dependency, form_data: OAuth2PasswordRequestForm = Depends()) -> Token:
