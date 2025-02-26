@@ -8,6 +8,8 @@ from ..models.users import Users
 from ..utils.passwords import get_password_hash
 from ..utils.users import get_current_user
 from fastapi.responses import JSONResponse
+from ..services.claim_refrral import claim_new_refrral_by
+from typing import Optional
 
 router = APIRouter(
     prefix="/users",
@@ -25,11 +27,12 @@ class UserBase(BaseModel):
 
 
 @router.post("/register")
-async def create_user(referral:str, user: UserBase, db: db_dependency):
+async def create_user( user: UserBase, db: db_dependency, referrer: Optional[str] = None):
+
     
     # TODO: Validate the users emails and username
 
-    db_user = Users( 
+    new_user = Users( 
             username=user.username,
             email=user.email,
             first_name=user.first_name, 
@@ -37,21 +40,28 @@ async def create_user(referral:str, user: UserBase, db: db_dependency):
             password=get_password_hash(user.password),
         )
 
+        
     try:
         # Add the new user to the database
-        db.add(db_user)
+        db.add(new_user) 
         db.commit()
-        db.refresh(db_user) 
+        db.refresh(new_user) 
         
+        # Claiming the refral 
+        if(referrer):
+            claim_new_refrral_by(referrer=referrer, 
+                                 referred=new_user.id, 
+                                 db=db)
+            
+
         return JSONResponse(
             status_code=200,
             content= {
                 "message": "User registered successfully.", 
-                "username": db_user.username,
-                "email": db_user.email
+                "username": new_user.username, 
             }
         )     
-
+        
     except IntegrityError as e: 
 
         db.rollback()

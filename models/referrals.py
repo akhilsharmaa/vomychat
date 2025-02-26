@@ -14,11 +14,8 @@ class Refrrals(Base):
     __tablename__ = "refrrals"
     
     id                  = Column(Integer, primary_key=True, autoincrement=True)
-    referrer_user_id    = Column(String(50), ForeignKey("users.id"), nullable=False)
-    
-    referred_user_email = Column(String(50), ForeignKey("users.id"), nullable=False)
-    referred_user_id    = Column(String(50), ForeignKey("users.id"), nullable=True)
+    referrer_user_id    = Column(String(50),  nullable=False)
+    referred_user_id    = Column(String(50),  nullable=False)
     status              = Column(Enum(ReferralStatus), nullable=False, default=ReferralStatus.PENDING)
     date_referred       = Column(DateTime, default=func.now())
     
-    __table_args__ = (UniqueConstraint('referrer_user_id', 'referred_user_email', name='unique_referral'),)
