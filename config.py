@@ -12,8 +12,10 @@ ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 3000
 
 JWT_SECRET_KEY = os.environ.get("JWT_SECRET_KEY")
-DATABASE_URL = os.environ.get("DATABASE_URL")
-SERPER_API_KEY = os.environ.get("SERPER_API_KEY")
+# DATABASE_URL = os.environ.get("DATABASE_URL")
+DATABASE_URL = "postgresql://vomychat_owner:npg_6evZ0BSIfozH@ep-summer-poetry-a5ji43bf.us-east-2.aws.neon.tech/vomychat"
+SERPER_API_KEY = os.environ.get("SERPER_API_KEY") 
+BASE_API = os.environ.get("BASE_API")
 
 # JWT CONFIGURATION 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")

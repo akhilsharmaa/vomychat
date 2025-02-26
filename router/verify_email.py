@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
+from urllib.parse import quote
 import jwt
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
@@ -12,7 +13,7 @@ from ..services.claim_refrral import claim_new_refrral_by
 from typing import Optional
 from ..services.send_mail import send_mail
 from ..utils.passwords import create_access_token
-from ..config import JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context
+from ..config import JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, BASE_API
 
 router = APIRouter(
     tags=["Users"],
@@ -28,8 +29,10 @@ async def read_users_me(db: db_dependency, current_user: Users = Depends(get_cur
         data={"sub": current_user.username}, expires_delta=access_token_expires
     )
 
-    VERIFY_LINK = f"http://0.0.0.0:8000/verify?token={access_token}"
+    VERIFY_LINK = f"{BASE_API}/verify?token={quote(access_token)}"
     BODY_TEXT = f"Please verify you email by clicking on \n {VERIFY_LINK}. or copy and open in browser."     
+    
+    print(BODY_TEXT)
     
     try: 
         send_mail(subject="Verify you email now", 
