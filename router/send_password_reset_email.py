@@ -50,9 +50,15 @@ async def read_users_me(db: db_dependency, email: str):
         data={"sub": current_user.username}, expires_delta=access_token_expires
     )
 
-    VERIFY_LINK = f"{BASE_API}/changepassword?token={quote(access_token)}&new_password="
-    BODY_TEXT = f"Please copy and append your new password in below link: \n {VERIFY_LINK} ."     
-    
+    VERIFY_LINK = f"{BASE_API}/api/changepassword?token={quote(access_token)}&new_password="
+    BODY_TEXT = (
+        f"Click the link below to reset your password:\n\n"
+        f"{VERIFY_LINK}\n\n"
+        f"If the above link doesn't work, you can make a GET request with the following details:\n\n"
+        f"- Token: `{quote(access_token)}`\n"
+        f"- New Password: (Provide your new password in the request)"
+    )
+
     try: 
         send_mail(subject="Reset Password", 
                     to=[current_user.email], 

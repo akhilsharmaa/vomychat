@@ -56,7 +56,7 @@ async def verify_email_user(db: db_dependency, token: str, new_password: str):
     except Exception as e: 
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Invalid Token !! Failed to decode the token {str(e)}"
+            detail=f"Invalid Token, Failed to decode the token {str(e)}"
         )
         
     
