@@ -10,7 +10,7 @@ from fastapi.responses import JSONResponse
 from sqlalchemy import cast, String
 
 router = APIRouter(
-    prefix="",
+    prefix="/api",
     tags=["Refrral"],
     responses={404: {"description": "Not found"}},
 )

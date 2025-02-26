@@ -11,7 +11,7 @@ from fastapi.responses import JSONResponse
 from ..services.claim_refrral import claim_new_refrral_by
 
 router = APIRouter(
-    prefix="/users",
+    prefix="/api",
     tags=["Users"],
     responses={404: {"description": "Not found"}},
 ) 
@@ -19,7 +19,7 @@ router = APIRouter(
 
 class UserBase(BaseModel): 
     username: constr(min_length=3, max_length=50) = Field(..., description="Username must be between 3 and 50 characters.")
-    email: EmailStr = Field(..., description="Valid email address.")
+    email: EmailStr | None = Field(default=None)
     first_name: constr(min_length=1, max_length=50) = Field(..., description="First name must be between 1 and 50 characters.")
     last_name: constr(min_length=1, max_length=50) = Field(..., description="Last name must be between 1 and 50 characters.")
     password: constr(min_length=8) = Field(..., description="Password must be at least 8 characters.")

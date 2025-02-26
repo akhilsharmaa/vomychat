@@ -16,6 +16,7 @@ from ..utils.passwords import create_access_token
 from ..config import JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context, BASE_API
 
 router = APIRouter(
+    prefix="/api",
     tags=["Users"],
     responses={404: {"description": "Not found"}},
 ) 
