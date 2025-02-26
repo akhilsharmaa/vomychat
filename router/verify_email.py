@@ -7,6 +7,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
 from ..services.database import db_dependency
 from ..models.users import Users 
+from ..models.referrals import Refrrals, ReferralStatus 
 from ..utils.users import get_current_user
 from fastapi.responses import JSONResponse
 from ..services.claim_refrral import claim_new_refrral_by
@@ -94,13 +95,6 @@ async def verify_email_user(db: db_dependency, token: str):
         db.commit()  # Commit the changes
         db.refresh(referrer_user)  # Refresh the session to reflect changes
 
-            
-        return JSONResponse(
-                    status_code=200,
-                    content= {
-                        "message": f"we have successfully verified you, thankyou",  
-                    }
-                )   
 
     except Exception as e:
         db.rollback()  # Rollback in case of error
@@ -108,4 +102,29 @@ async def verify_email_user(db: db_dependency, token: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to verify email. Exception: {str(e)}"
         )
+    
+    
+    try:
+        referral = db.query(Refrrals).filter(Refrrals.referred_user_id == str(referrer_user.id)).first()
         
+        print(referral)
+        
+        if referral: 
+            referral.status = ReferralStatus.SUCCESSFUL; 
+            db.commit()  # Commit the changes
+            db.refresh(referral)  # Refresh the session to reflect changes
+
+    except Exception as e:
+        db.rollback()  # Rollback in case of error
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to update refrals, please try again later. {str(e)}"
+        )
+        
+            
+    return JSONResponse(
+                    status_code=200,
+                    content= {
+                        "message": f"we have successfully verified you, thankyou",  
+                    }
+                )   
