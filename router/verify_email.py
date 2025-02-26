@@ -22,7 +22,7 @@ router = APIRouter(
 ) 
 
 
-@router.post("/resend_verification") 
+@router.post("/email-verification") 
 async def read_users_me(db: db_dependency, current_user: Users = Depends(get_current_user)): 
 
     access_token_expires = timedelta(minutes=15)

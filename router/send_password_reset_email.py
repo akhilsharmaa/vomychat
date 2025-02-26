@@ -22,7 +22,7 @@ router = APIRouter(
 ) 
         
 
-@router.get("/getpasswordresetemail") 
+@router.get("/forgot-password") 
 async def read_users_me(db: db_dependency, email: str): 
  
     try: 
