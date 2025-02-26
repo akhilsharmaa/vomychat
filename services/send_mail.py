@@ -3,18 +3,13 @@ import smtplib
 from dotenv import load_dotenv 
 
 load_dotenv()
- 
 
 GMAIL_USER = os.environ.get("GMAIL_USER") 
 GMAIL_PASS = os.environ.get("GMAIL_PASS") 
 
-def send_mail():  
+def send_mail(subject, to, body_text):  
     
-    sent_from = GMAIL_USER
-
-    to = ['akhil.sudo@gmail.com', 'akhilsharma3332@gmail.com']
-    subject = 'Message subject'
-    body = "Hey, what's up?\n\n- You"
+    sent_from = GMAIL_USER  
 
     email_text = """\
     From: {}
@@ -22,7 +17,11 @@ def send_mail():
     Subject: {}
 
     {}
-    """.format(sent_from, ", ".join(to), subject, body)
+    """.format(sent_from, ", ".join(to), subject, body_text)
+
+
+    try: 
+        
 
     server = smtplib.SMTP_SSL('smtp.googlemail.com', 465)
     server.ehlo()
@@ -30,6 +29,4 @@ def send_mail():
     server.sendmail(sent_from, to, email_text)
     server.close()
 
-    print('Email sent!') 
-        
-send_mail()
+    print('Email sent!')  

@@ -2,7 +2,7 @@ import os
 from os.path import join, dirname
 from dotenv import load_dotenv
 from fastapi import Depends, FastAPI
-from .router import users, auth, refrral
+from .router import users, auth, refrral, verify_email
 from .services.database import create_tables
 from fastapi.middleware.cors import CORSMiddleware
 from .utils.logger import logger
@@ -20,6 +20,7 @@ app.add_middleware(
 app.include_router(users.router) 
 app.include_router(auth.router)  
 app.include_router(refrral.router)  
+app.include_router(verify_email.router)  
 
 create_tables()
 
