@@ -1,7 +1,6 @@
 import jwt
 from pydantic import BaseModel 
-from fastapi import Depends, FastAPI, HTTPException, status, Depends
-from jwt.exceptions import InvalidTokenError
+from fastapi import Depends, FastAPI, HTTPException, status, Depends 
 from ..config import oauth2_scheme, JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context
 from ..models.users import Users 
 from ..services.database import db_dependency, get_db
@@ -37,8 +36,9 @@ def get_current_user(db: db_dependency, token: str = Depends(oauth2_scheme)) -> 
         if username is None:
             raise credentials_exception
         token_data = TokenData(username=username)
-    except InvalidTokenError:
-        raise credentials_exception
+    except Exception as e:
+            raise credentials_exception
+    
      
     user = get_user(db=db, username=token_data.username)
     if user is None:
