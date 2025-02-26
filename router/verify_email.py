@@ -1,5 +1,6 @@
 from datetime import datetime, timedelta, timezone
 from typing import Annotated
+import jwt
 from pydantic import BaseModel
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.exc import IntegrityError
@@ -11,6 +12,7 @@ from ..services.claim_refrral import claim_new_refrral_by
 from typing import Optional
 from ..services.send_mail import send_mail
 from ..utils.passwords import create_access_token
+from ..config import JWT_SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, pwd_context
 
 router = APIRouter(
     tags=["Users"],
@@ -42,12 +44,64 @@ async def read_users_me(db: db_dependency, current_user: Users = Depends(get_cur
                 }
             )      
 
-    except Exception as e:
-        # Catch any other unexpected errors
-        db.rollback()  
+    except Exception as e: 
         print(e)
         
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Failed to send verification link"
         )
+        
+        
+@router.get("/verify")
+async def verify_email_user(db: db_dependency, token: str):
+
+    try:
+        payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[ALGORITHM])
+        username: str = payload.get("sub")
+        
+        if username is None: 
+            return JSONResponse(
+                status_code=401,
+                content= {
+                    "message": f"Verificaiton link expired. ",  
+                }
+            )    
+    
+    except Exception as e: 
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to decode the token {str(e)}"
+        )
+            
+    
+    # TODO: update the refrrals table when user verified, the token pending -> completed. 
+    
+    try:
+        referrer_user = db.query(Users).filter(Users.username == username).first()
+
+        if referrer_user is None: 
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="Invalid verification link, No user found"
+            )
+
+        referrer_user.is_email_verified = True
+        db.commit()  # Commit the changes
+        db.refresh(referrer_user)  # Refresh the session to reflect changes
+
+            
+        return JSONResponse(
+                    status_code=200,
+                    content= {
+                        "message": f"we have successfully verified you, thankyou",  
+                    }
+                )   
+
+    except Exception as e:
+        db.rollback()  # Rollback in case of error
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"Failed to verify email. Exception: {str(e)}"
+        )
+        

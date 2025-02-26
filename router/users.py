@@ -81,7 +81,7 @@ async def create_user( user: UserBase, db: db_dependency, referrer: Optional[str
 
 @router.post("/me", response_model=UserBase)
 async def read_users_me(db: db_dependency, current_user: Users = Depends(get_current_user)): 
-         
+
     return JSONResponse(
         status_code=200,
         content= {
