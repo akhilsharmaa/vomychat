@@ -30,7 +30,7 @@ async def read_users_me(db: db_dependency, current_user: Users = Depends(get_cur
         data={"sub": current_user.username}, expires_delta=access_token_expires
     )
 
-    VERIFY_LINK = f"{BASE_API}/verify?token={quote(access_token)}"
+    VERIFY_LINK = f"{BASE_API}/api/verify?token={quote(access_token)}"
     BODY_TEXT = f"Please verify you email by clicking on \n {VERIFY_LINK}. or copy and open in browser."     
     
     print(BODY_TEXT)
